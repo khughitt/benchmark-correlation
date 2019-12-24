@@ -28,6 +28,22 @@ other methods (Spearman, etc.) may be included.
 - [stats::cor](https://www.rdocumentation.org/packages/stats/versions/3.6.1/topics/corj)
 - [coop::pcor](https://www.rdocumentation.org/packages/coop/versions/0.6-2/topics/pcor)
 
+## Usage
+
+To run the benchmarks on your own system, clone the repo, edit the configuration file
+(`config.yml`) to your liking, and then create a conda environment and run the pipeline
+using the following commands:
+
+```sh
+conda create -n benchmark-cor --file requirements.txt
+conda activate benchmark-cor
+snakemake --configfile config.yml -j<num_threads>
+```
+
+Where `<num_threads>` is the number of threads you want to allow
+[snakemake](https://snakemake.readthedocs.io/en/stable/) to use when
+executing the pipline.
+
 ## Results
 
 | Method  | Language | Implementation | Num Rows | Time (Secs) |
