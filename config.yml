@@ -1,0 +1,13 @@
+output_dir: '/data/benchmark/correlation'
+
+benchmark:
+  num_threads: 32
+  num_times: 2
+
+test_data:
+  num_rows: [1000, 5000, 10000, 15000, 20000]
+  num_cols: 1000
+
+dask:
+  num_workers: 16
+

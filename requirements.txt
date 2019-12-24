@@ -1,0 +1,7 @@
+cupy
+numpy
+r-coop
+r-rcppcnpy
+r-microbenchmark
+pandas
+snakemake-minimal
