@@ -21,7 +21,7 @@ knitr::kable(res, digits = 2)
 ```{r correlation_benchmark_barplot}
 ggplot(res, aes(x = Implementation, y = `Time (Secs)`, fill = Implementation)) +
   geom_bar(stat = 'identity') + 
-  facet_wrap(~`Num Rows`) +
+  facet_wrap(~`Num Rows`, scales = 'free_y') +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 90)) +
   ggtitle("Correlation performance comparison") +
@@ -36,7 +36,7 @@ res_subset <- res %>%
 
 ggplot(res_subset, aes(x = Implementation, y = `Time (Secs)`, fill = Implementation)) +
   geom_bar(stat = 'identity') + 
-  facet_wrap(~`Num Rows`) +
+  facet_wrap(~`Num Rows`, scales = 'free_y') +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 90)) +
   ggtitle("Correlation performance comparison (Excluding stats::cor)") +

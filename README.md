@@ -30,9 +30,10 @@ other methods (Spearman, etc.) may be included.
 
 ## Usage
 
-To run the benchmarks on your own system, clone the repo, edit the configuration file
-(`config.yml`) to your liking, and then create a conda environment and run the pipeline
-using the following commands:
+To run the benchmark pipeline, simply create a clone of the repo, edit the configuration file
+(`config.yml`) to your liking.
+
+Next, create a conda environment and run the pipeline using the following commands:
 
 ```sh
 conda create -n benchmark-cor --file requirements.txt
@@ -49,25 +50,36 @@ executing the pipline.
 | Method  | Language | Implementation | Num Rows | Time (Secs) |
 | :------ | :------- | :------------- | -------: | ----------: |
 | Pearson | Python   | numpy.corrcoef |     1000 |        0.05 |
-| Pearson | Python   | numpy.corrcoef |     5000 |        0.28 |
-| Pearson | Python   | numpy.corrcoef |    10000 |        1.01 |
-| Pearson | Python   | numpy.corrcoef |    15000 |        2.32 |
+| Pearson | Python   | numpy.corrcoef |     5000 |        0.29 |
+| Pearson | Python   | numpy.corrcoef |    10000 |        1.02 |
+| Pearson | Python   | numpy.corrcoef |    15000 |        2.52 |
+| Pearson | Python   | numpy.corrcoef |    20000 |        4.42 |
+| Pearson | Python   | numpy.corrcoef |    25000 |        6.49 |
+| Pearson | Python   | numpy.corrcoef |    37500 |       14.04 |
+| Pearson | Python   | numpy.corrcoef |    50000 |       25.36 |
 | Pearson | Python   | numpy.einsum   |     1000 |        0.03 |
-| Pearson | Python   | numpy.einsum   |     5000 |        0.41 |
-| Pearson | Python   | numpy.einsum   |    10000 |        1.48 |
-| Pearson | Python   | numpy.einsum   |    15000 |        3.49 |
-| Pearson | R        | stats::cor     |     1000 |        0.65 |
-| Pearson | R        | stats::cor     |     5000 |       17.18 |
-| Pearson | R        | stats::cor     |    10000 |       70.98 |
-| Pearson | R        | stats::cor     |    15000 |      165.36 |
+| Pearson | Python   | numpy.einsum   |     5000 |        0.46 |
+| Pearson | Python   | numpy.einsum   |    10000 |        1.63 |
+| Pearson | Python   | numpy.einsum   |    15000 |        3.65 |
+| Pearson | Python   | numpy.einsum   |    20000 |        6.67 |
+| Pearson | Python   | numpy.einsum   |    25000 |        9.14 |
+| Pearson | Python   | numpy.einsum   |    37500 |       21.58 |
+| Pearson | Python   | numpy.einsum   |    50000 |       42.10 |
+| Pearson | R        | stats::cor     |     1000 |        0.66 |
+| Pearson | R        | stats::cor     |     5000 |       17.16 |
+| Pearson | R        | stats::cor     |    10000 |       71.99 |
+| Pearson | R        | stats::cor     |    15000 |      167.05 |
 | Pearson | R        | coop::pcor     |     1000 |        0.02 |
-| Pearson | R        | coop::pcor     |     5000 |        0.29 |
-| Pearson | R        | coop::pcor     |    10000 |        0.86 |
-| Pearson | R        | coop::pcor     |    15000 |        1.71 |
+| Pearson | R        | coop::pcor     |     5000 |        0.28 |
+| Pearson | R        | coop::pcor     |    10000 |        0.87 |
+| Pearson | R        | coop::pcor     |    15000 |        1.76 |
+| Pearson | R        | coop::pcor     |    20000 |        3.11 |
+| Pearson | R        | coop::pcor     |    25000 |        4.41 |
+| Pearson | R        | coop::pcor     |    37500 |       11.21 |
 | Pearson | Python   | cupy.corrcoef  |     1000 |        0.02 |
 | Pearson | Python   | cupy.corrcoef  |     5000 |        0.30 |
-| Pearson | Python   | cupy.corrcoef  |    10000 |        1.15 |
-| Pearson | Python   | cupy.corrcoef  |    15000 |        2.60 |
+| Pearson | Python   | cupy.corrcoef  |    10000 |        1.17 |
+| Pearson | Python   | cupy.corrcoef  |    15000 |        2.61 |
 
 
 ![](results/summarize_results_files/figure-gfm/correlation_benchmark_barplot-3-1.png)
@@ -87,7 +99,7 @@ executing the pipline.
 - Due to GPU resource limitations, matrice larger than ~15,000 entries could not be tested
   with cupy.
 - The parallelized correlation implementation of pearson correlation in R,
-  `coop::pcor()` performed quite well for smaller datasets (~ 20,000 or fewer entries),
+  `coop::pcor()` performed quite well for smaller datasets (~ 40,000 or fewer entries),
   however, it appears to run out of memory and segfault regularly at larger dataset
   sizes, whereas some of the other methods can scale up beyond 50,000 records on the
   same machine.

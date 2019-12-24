@@ -9,21 +9,29 @@ import pandas as pd
 # number of columns to use for test data (static)
 num_cols = int(config['test_data']['num_cols'])
 
-out_dir = config['output_dir']
+# determine expected output files; some methods cannot be run on all dataset
+# sizes due to time/memory constraints
+num_rows = {}
 
-rule all:
-    input:
-        expand(os.path.join(out_dir, 'data', 'mat_{num_rows}.npy'), num_rows=config['test_data']['num_rows']),
-        expand(os.path.join(out_dir, 'cor_mats', 'cor_mat_{num_rows}_differences.tsv'), num_rows=config['test_data']['num_rows']),
-        os.path.join(out_dir, 'timings', 'all_timings.csv')
+cor_methods = ['pearson_cor_numpy_cor_coef', 'pearson_cor_numpy_einsum',
+               'pearson_cor_base_r', 'pearson_cor_coop_pcor', 'pearson_cor_cupy']
+
+for method in cor_methods:
+    num_rows[method] = config['test_data']['num_rows']
+
+    if method in config['method_row_limits']:
+        row_limit = config['method_row_limits'][method]
+        num_rows[method] = [x for x in num_rows[method] if x <= row_limit]
+
+out_dir = config['output_dir']
 
 rule combine_timings:
     input:
-        expand(os.path.join(out_dir, 'timings', 'pearson_cor_numpy_cor_coef', 'timings_{num_rows}.csv'), num_rows=config['test_data']['num_rows']),
-        expand(os.path.join(out_dir, 'timings', 'pearson_cor_numpy_einsum', 'timings_{num_rows}.csv'), num_rows=config['test_data']['num_rows']),
-        expand(os.path.join(out_dir, 'timings', 'pearson_cor_base_r', 'timings_{num_rows}.csv'), num_rows=config['test_data']['num_rows']),
-        expand(os.path.join(out_dir, 'timings', 'pearson_cor_coop_pcor', 'timings_{num_rows}.csv'), num_rows=config['test_data']['num_rows']),
-        expand(os.path.join(out_dir, 'timings', 'pearson_cor_cupy', 'timings_{num_rows}.csv'), num_rows=config['test_data']['num_rows'])
+        expand(os.path.join(out_dir, 'timings', 'pearson_cor_numpy_cor_coef', 'timings_{nrows}.csv'), nrows=num_rows['pearson_cor_numpy_cor_coef']),
+        expand(os.path.join(out_dir, 'timings', 'pearson_cor_numpy_einsum', 'timings_{nrows}.csv'), nrows=num_rows['pearson_cor_numpy_einsum']),
+        expand(os.path.join(out_dir, 'timings', 'pearson_cor_base_r', 'timings_{nrows}.csv'), nrows=num_rows['pearson_cor_base_r']),
+        expand(os.path.join(out_dir, 'timings', 'pearson_cor_coop_pcor', 'timings_{nrows}.csv'), nrows=num_rows['pearson_cor_coop_pcor']),
+        expand(os.path.join(out_dir, 'timings', 'pearson_cor_cupy', 'timings_{nrows}.csv'), nrows=num_rows['pearson_cor_cupy'])
     output: 
         os.path.join(out_dir, 'timings', 'all_timings.csv')
     run:
@@ -39,13 +47,13 @@ rule combine_timings:
 
 rule measure_cor_mat_differences:
     input:
-        os.path.join(out_dir, 'cor_mats', 'pearson_cor_numpy_cor_coef', 'cor_mat_{num_rows}.npy'),
-        os.path.join(out_dir, 'cor_mats', 'pearson_cor_numpy_einsum', 'cor_mat_{num_rows}.npy'),
-        os.path.join(out_dir, 'cor_mats', 'pearson_cor_coop_pcor', 'cor_mat_{num_rows}.npy'),
-        os.path.join(out_dir, 'cor_mats', 'pearson_cor_base_r', 'cor_mat_{num_rows}.npy'),
-        os.path.join(out_dir, 'cor_mats', 'pearson_cor_cupy', 'cor_mat_{num_rows}.npy')
+        os.path.join(out_dir, 'cor_mats', 'pearson_cor_numpy_cor_coef', 'cor_mat_{nrows}.npy'),
+        os.path.join(out_dir, 'cor_mats', 'pearson_cor_numpy_einsum', 'cor_mat_{nrows}.npy'),
+        os.path.join(out_dir, 'cor_mats', 'pearson_cor_coop_pcor', 'cor_mat_{nrows}.npy'),
+        os.path.join(out_dir, 'cor_mats', 'pearson_cor_base_r', 'cor_mat_{nrows}.npy'),
+        os.path.join(out_dir, 'cor_mats', 'pearson_cor_cupy', 'cor_mat_{nrows}.npy')
     output:
-        os.path.join(out_dir, 'cor_mats', 'cor_mat_{num_rows}_differences.tsv')
+        os.path.join(out_dir, 'cor_mats', 'cor_mat_{nrows}_differences.tsv')
     run:
         # create an empty matrix to store differences in
         res = np.zeros((len(input), len(input)))
@@ -73,52 +81,53 @@ rule measure_cor_mat_differences:
 
 rule benchmark_pearson_cor_numpy_corrcoef:
     input:
-        os.path.join(out_dir, 'data', 'mat_{num_rows}.npy')
+        os.path.join(out_dir, 'data', 'mat_{nrows}.npy')
     output:
-        cor_mat=os.path.join(out_dir, 'cor_mats', 'pearson_cor_numpy_cor_coef', 'cor_mat_{num_rows}.npy'),
-        timings=os.path.join(out_dir, 'timings', 'pearson_cor_numpy_cor_coef', 'timings_{num_rows}.csv')
+        cor_mat=os.path.join(out_dir, 'cor_mats', 'pearson_cor_numpy_cor_coef', 'cor_mat_{nrows}.npy'),
+        timings=os.path.join(out_dir, 'timings', 'pearson_cor_numpy_cor_coef', 'timings_{nrows}.csv')
     threads: config['benchmark']['num_threads']
     script: 'src/pearson-cor-numpy-corrcoef.py'
 
 rule benchmark_pearson_cor_numpy_einsum:
     input:
-        os.path.join(out_dir, 'data', 'mat_{num_rows}.npy')
+        os.path.join(out_dir, 'data', 'mat_{nrows}.npy')
     output:
-        cor_mat=os.path.join(out_dir, 'cor_mats', 'pearson_cor_numpy_einsum', 'cor_mat_{num_rows}.npy'),
-        timings=os.path.join(out_dir, 'timings', 'pearson_cor_numpy_einsum', 'timings_{num_rows}.csv')
+        cor_mat=os.path.join(out_dir, 'cor_mats', 'pearson_cor_numpy_einsum', 'cor_mat_{nrows}.npy'),
+        timings=os.path.join(out_dir, 'timings', 'pearson_cor_numpy_einsum', 'timings_{nrows}.csv')
     threads: config['benchmark']['num_threads']
     script: 'src/pearson-cor-numpy-einsum.py'
 
 rule benchmark_pearson_cor_coop_pcor:
     input:
-        os.path.join(out_dir, 'data', 'mat_{num_rows}.npy')
+        os.path.join(out_dir, 'data', 'mat_{nrows}.npy')
     output:
-        cor_mat=os.path.join(out_dir, 'cor_mats', 'pearson_cor_coop_pcor', 'cor_mat_{num_rows}.npy'),
-        timings=os.path.join(out_dir, 'timings', 'pearson_cor_coop_pcor', 'timings_{num_rows}.csv')
+        cor_mat=os.path.join(out_dir, 'cor_mats', 'pearson_cor_coop_pcor', 'cor_mat_{nrows}.npy'),
+        timings=os.path.join(out_dir, 'timings', 'pearson_cor_coop_pcor', 'timings_{nrows}.csv')
     threads: config['benchmark']['num_threads']
     script: 'src/pearson-cor-coop-pcor.R'
 
 rule benchmark_pearson_base_r:
     input:
-        os.path.join(out_dir, 'data', 'mat_{num_rows}.npy')
+        os.path.join(out_dir, 'data', 'mat_{nrows}.npy')
     output:
-        cor_mat=os.path.join(out_dir, 'cor_mats', 'pearson_cor_base_r', 'cor_mat_{num_rows}.npy'),
-        timings=os.path.join(out_dir, 'timings', 'pearson_cor_base_r', 'timings_{num_rows}.csv')
+        cor_mat=os.path.join(out_dir, 'cor_mats', 'pearson_cor_base_r', 'cor_mat_{nrows}.npy'),
+        timings=os.path.join(out_dir, 'timings', 'pearson_cor_base_r', 'timings_{nrows}.csv')
     threads: config['benchmark']['num_threads']
     script: 'src/pearson-cor-base-r.R'
 
 rule benchmark_pearson_cor_cupy:
     input:
-        os.path.join(out_dir, 'data', 'mat_{num_rows}.npy')
+        os.path.join(out_dir, 'data', 'mat_{nrows}.npy')
     output:
-        cor_mat=os.path.join(out_dir, 'cor_mats', 'pearson_cor_cupy', 'cor_mat_{num_rows}.npy'),
-        timings=os.path.join(out_dir, 'timings', 'pearson_cor_cupy', 'timings_{num_rows}.csv')
+        cor_mat=os.path.join(out_dir, 'cor_mats', 'pearson_cor_cupy', 'cor_mat_{nrows}.npy'),
+        timings=os.path.join(out_dir, 'timings', 'pearson_cor_cupy', 'timings_{nrows}.csv')
     threads: config['benchmark']['num_threads']
     script: 'src/pearson-cor-cupy.py'
 
 rule build_test_data:
     output:
-        os.path.join(out_dir, 'data', 'mat_{num_rows}.npy')
+        os.path.join(out_dir, 'data', 'mat_{nrows}.npy')
     run:
-        np.save(output[0], np.random.randn(int(wildcards['num_rows']), num_cols))
+        np.random.seed(0)
+        np.save(output[0], np.random.randn(int(wildcards['nrows']), num_cols))
         

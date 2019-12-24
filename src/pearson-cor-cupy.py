@@ -21,7 +21,7 @@ except:
 
 # save timings
 with open(snakemake.output['timings'], 'w') as fp:
-    entry = ['Pearson', 'Python', 'cupy.corrcoef', snakemake.wildcards['num_rows'], str(min(times))]
+    entry = ['Pearson', 'Python', 'cupy.corrcoef', snakemake.wildcards['nrows'], str(min(times))]
     fp.write(", ".join(entry) + "\n")
 
 # store correlation matrix result for comparison
@@ -29,7 +29,7 @@ try:
     cor_mat = cp.asnumpy(cp.corrcoef(cp.array(mat)))
     cor_mat[np.tril_indices_from(cor_mat)] = np.nan
 except:
-    num_rows = int(snakemake.wildcards['num_rows'])
-    cor_mat = np.repeat(np.nan, num_rows**2).reshape((num_rows, num_rows))
+    nrows = int(snakemake.wildcards['nrows'])
+    cor_mat = np.repeat(np.nan, nrows**2).reshape((nrows, nrows))
 
 np.save(snakemake.output['cor_mat'], cor_mat)

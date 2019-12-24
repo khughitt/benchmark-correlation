@@ -23,7 +23,7 @@ cor_mat[lower.tri(cor_mat)] <- NA
 diag(cor_mat) <- NA
 
 # save timings
-entry <- c('Pearson', 'R', 'stats::cor', snakemake@wildcards$num_rows, min_time)
+entry <- c('Pearson', 'R', 'stats::cor', snakemake@wildcards$nrows, min_time)
 entry <- paste0(entry, collapse = ', ')
 
 fp <- file(snakemake@output[['timings']], 'w')

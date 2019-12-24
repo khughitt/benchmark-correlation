@@ -34,7 +34,7 @@ times = timeit.repeat("corrcoeff_einsum_optimized(mat.T, mat.T)",
 
 # save timings
 with open(snakemake.output['timings'], 'w') as fp:
-    entry = ['Pearson', 'Python', 'numpy.einsum', snakemake.wildcards['num_rows'], str(min(times))]
+    entry = ['Pearson', 'Python', 'numpy.einsum', snakemake.wildcards['nrows'], str(min(times))]
     fp.write(", ".join(entry) + "\n")
 
 # store correlation matrix result for comparison

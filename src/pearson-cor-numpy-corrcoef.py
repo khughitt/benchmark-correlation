@@ -14,7 +14,7 @@ times = timeit.repeat("np.corrcoef(mat)", globals=globals(), number=1, repeat=nu
 
 # save timings
 with open(snakemake.output['timings'], 'w') as fp:
-    entry = ['Pearson', 'Python', 'numpy.corrcoef', snakemake.wildcards['num_rows'], str(min(times))]
+    entry = ['Pearson', 'Python', 'numpy.corrcoef', snakemake.wildcards['nrows'], str(min(times))]
     fp.write(", ".join(entry) + "\n")
 
 # store correlation matrix result for comparison
