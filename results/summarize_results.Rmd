@@ -1,0 +1,59 @@
+---
+title: "R/Python Correlation Performance Benchmark Results Summary"
+date: "`r strftime(Sys.time(), '%Y-%m-%d')`"
+output: github_document
+---
+
+```{r, message = FALSE}
+library(tidyverse)
+```
+
+# Overview
+
+```{r}
+res <- read_csv('/data/benchmark/correlation/timings/all_timings.csv')
+
+knitr::kable(res, digits = 2)
+```
+
+# Time (seconds)
+
+```{r correlation_benchmark_barplot}
+ggplot(res, aes(x = Implementation, y = `Time (Secs)`, fill = Implementation)) +
+  geom_bar(stat = 'identity') + 
+  facet_wrap(~`Num Rows`) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  ggtitle("Correlation performance comparison") +
+  ylab("Time (seconds)")
+```
+
+# Time (seconds, excluding stats::cor)
+
+```{r correlation_benchmark_barplot}
+res_subset <- res %>% 
+  filter(Implementation != 'stats::cor')
+
+ggplot(res_subset, aes(x = Implementation, y = `Time (Secs)`, fill = Implementation)) +
+  geom_bar(stat = 'identity') + 
+  facet_wrap(~`Num Rows`) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  ggtitle("Correlation performance comparison (Excluding stats::cor)") +
+  ylab("Time (seconds)")
+```
+
+# Time (log-seconds)
+
+
+```{r}
+ggplot(res, aes(x = Implementation, y = `Time (Secs)`, fill = Implementation)) +
+  geom_bar(stat = 'identity') + 
+  scale_y_continuous(trans='log1p') +
+  facet_wrap(~`Num Rows`) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90)) +
+  ggtitle("Correlation performance comparison (Log-scaled)") +
+  ylab("Time (log-seconds)")
+```
+

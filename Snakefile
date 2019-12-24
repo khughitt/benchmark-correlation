@@ -30,11 +30,11 @@ rule combine_timings:
         dfs = []
 
         for infile in input:
-            print(infile)
             dfs.append(pd.read_csv(infile, header=None))
 
         dat = pd.concat(dfs)
-        print(output)
+
+        dat.columns = ['Method', 'Language', 'Implementation', 'Num Rows', 'Time (Secs)']
         dat.to_csv(output[0], index=False)
 
 rule measure_cor_mat_differences:
