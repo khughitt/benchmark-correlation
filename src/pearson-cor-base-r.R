@@ -10,7 +10,7 @@ mat <- npyLoad(snakemake@input[[1]])
 # benchmark performance
 times <- microbenchmark(
   cor(t(mat)),
-  times = 5 #snakemake@config$benchmark$num_times
+  times = snakemake@config$benchmark$num_times
 )
 
 # get minimum time in seconds

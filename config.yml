@@ -1,14 +1,15 @@
-output_dir: '/data/benchmark/correlation'
+output_dir: '/data/benchmark/correlation/jan2021'
 
 benchmark:
   num_threads: 32
-  num_times: 2
+  num_times: 5
 
 test_data:
-  num_rows: [1000, 5000, 10000, 15000, 20000, 25000, 37500, 50000]
+  num_rows: [5000, 10000, 15000, 20000, 25000, 37500, 50000]
   num_cols: 1000
 
 method_row_limits:
   pearson_cor_base_r: 15000
   pearson_cor_cupy: 15000
   pearson_cor_coop_pcor: 37500
+  spearman_cor_numba: 15000

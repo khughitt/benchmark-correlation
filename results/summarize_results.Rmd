@@ -1,5 +1,5 @@
 ---
-title: "R/Python Correlation Performance Benchmark Results Summary"
+title: "Julia/R/Python Correlation Performance Benchmark Results Summary"
 date: "`r strftime(Sys.time(), '%Y-%m-%d')`"
 output: github_document
 ---
@@ -11,7 +11,13 @@ library(tidyverse)
 # Overview
 
 ```{r}
-res <- read_csv('/data/benchmark/correlation/timings/all_timings.csv')
+res <- read_csv('/data/benchmark/correlation/jan2021/timings/all_timings.csv', col_types = cols())
+
+# exclude single spearman cor results;
+# will reconsider these later once other methods of computing spearman correlation have
+# been added.
+res <- res %>%
+  filter(Method == "Pearson")
 
 knitr::kable(res, digits = 2)
 ```

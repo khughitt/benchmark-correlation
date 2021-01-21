@@ -1,7 +1,10 @@
-cupy
+r-base>=4.0
+python>=3.8
+numba
 numpy
 r-coop
 r-rcppcnpy
 r-microbenchmark
 pandas
+scipy
 snakemake-minimal
